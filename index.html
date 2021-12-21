@@ -4,11 +4,44 @@
     <title>Awesome</title>
   </head>
   <body>
-    <p>This is nice</p>
-    <form action="">
-      <label>Search term:</label>
-      <input type="text" id="search" name="search">
-      <input type="submit" value="Submit">
-    </form>
+    <div>
+      <p>This is nice</p>
+      <form name="search" action="javascript:submitFunction();">
+        <label>IMDb/TMDb ID, formatted like "71712" or "464052":</label><br>
+        <input type="radio" id="tmdb">
+        <label for="tmdb">TMDB (TV show)</label>
+        <input type="radio" id="imdb" value="IMDB ID">
+        <label for="imdb">IMDB (movie)</label>
+        <br>
+        <input type="text" id="media_id" name="media_id"><br><br>
+        
+        <label>API Key:</label><br>
+        <input type="text" id="api_key" name="api_key"><br>
+
+        <input type="submit" value="Submit" onclick="">
+
+        <script type="text/javascript">
+          function submitFunction() {
+            var api_key = document.getElementById("api_key").value;
+            var media_id = document.getElementById("media_id").value;
+            const data = null;
+            const xhr = new XMLHttpRequest();
+            xhr.withCredentials = true;
+            xhr.addEventListener("readystatechange", function () {
+	            if (this.readyState === this.DONE) {
+		            alert(this.responseText);
+	            }
+            });
+            xhr.open("GET", "https://streaming-availability.p.rapidapi.com/get/basic?country=us&tmdb_id=movie%2F120&output_language=en");
+            xhr.setRequestHeader("x-rapidapi-host", "streaming-availability.p.rapidapi.com");
+            xhr.setRequestHeader("x-rapidapi-key", api_key);
+            xhr.send(data);
+          }
+        </script>
+      </form>
+    </div>
+    <div id="results">
+
+    </div>
   </body> 
 </html>
