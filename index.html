@@ -2,63 +2,117 @@
 <html>
   <head>
     <title>Awesome</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+      body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif;}
+      body, html {
+          height: 100%;
+          color: #777;
+          line-height: 1.8;
+      }
+
+      /* Create a Parallax Effect */
+      .bgimg-1, .bgimg-2, .bgimg-3 {
+          background-attachment: fixed;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-size: cover;
+      }
+      /* First image (Logo. Full height) */
+      .bgimg-1 {
+          background-image: url('https://g.foolcdn.com/editorial/images/601021/a-full-movie-theater-with-a-blank-screen.jpg');
+          min-height: 90%;
+      }
+
+      /* Second image (Portfolio) */
+      .bgimg-2 {
+          background-image: url("/w3images/parallax2.jpg");
+          min-height: 400px;
+      }
+
+      /* Third image (Contact) */
+      .bgimg-3 {
+          background-image: url("/w3images/parallax3.jpg");
+          min-height: 400px;
+      }
+
+      .w3-wide {letter-spacing: 10px;}
+      .w3-hover-opacity {cursor: pointer;}
+
+      /* Turn off parallax scrolling for tablets and phones */
+      @media only screen and (max-device-width: 1600px) {
+          .bgimg-1, .bgimg-2, .bgimg-3 {
+              background-attachment: scroll;
+              min-height: 400px;
+          }
+      }
+    </style>
   </head>
   <body>
-    <div>
-      <h1>Find where to stream something by its IMDb ID</h1>
-      <form name="search" action="javascript:submitFunction();">
-        <label>IMDb id, formatted like "tt0133093":</label><br>
-        <input type="text" id="media_id" name="media_id"><br><br>
-        <label><a href="https://rapidapi.com/movie-of-the-night-movie-of-the-night-default/api/streaming-availability/">API</a> Key:</label><br>
-        <input type="text" id="api_key" name="api_key"><br><br>
-        <input type="submit" value="Submit" onclick="">
-        <script type="text/javascript">
-          function output(data) {
-            var output_element = document.getElementById("results");
-            output_element.innerHTML = "";
+    <div class="bgimg-1 w3-display-container">
+      <div class="w3-display-middle w3-black w3-padding-large " style="white-space: nowrap; text-align: center;">
+        <h1 class="w3-center w3-padding-large w3-black w3-xlarge w3-wide" style="font-weight: 800; align-self: center; text-align: center; font-size: 100px;">WHERE TO WATCH</h1>
+         <p class="w3-center">Find where to stream your favorite shows and movies!</p>
+        <form name="search" action="javascript:submitFunction();">
+          <label>IMDb id, formatted like "tt0133093":</label><br>
+          <input type="text" class="input-field,form-control" id="media_id" name="media_id"><br><br>
+          <label><a href="https://rapidapi.com/movie-of-the-night-movie-of-the-night-default/api/streaming-availability/">API</a> Key:</label><br>
+          <input type="text" id="api_key" name="api_key"><br><br>
+          <input type="submit" class="w3-bar-item w3-button" value="Submit" onclick="">
+          <script type="text/javascript">
+            function output(data) {
+              var output_element = document.getElementById("results");
+              output_element.innerHTML = "";
 
-            // Title
-            var media_title_element = output_element.appendChild(document.createElement("h2"));
-            media_title_element.innerHTML = data.originalTitle;
-            
-            // Description
-            var media_descr_element = output_element.appendChild(document.createElement("p"));
-            media_descr_element.innerHTML = data.overview;
+              // Title
+              var media_title_element = output_element.appendChild(document.createElement("h2"));
+              media_title_element.innerHTML = data.originalTitle;
+              media_title_element.class = "w3-center";
+              
+              // Description
+              var media_descr_element = output_element.appendChild(document.createElement("p"));
+              media_descr_element.innerHTML = data.overview;
 
-            // Streaming services
-            Object.keys(data.streamingInfo).forEach((service, index) => {
-              console.log(service);
-              console.log(data.streamingInfo[service].us.link);
-              var stream_element = output_element.appendChild(document.createElement("div"));
-              var stream_title_element = stream_element.appendChild(document.createElement("h3"));
-              stream_title_element.innerHTML = service;
-              var stream_link_element = stream_element.appendChild(document.createElement("a"));
-              stream_link_element.href = data.streamingInfo[service].us.link;
-              stream_link_element.innerHTML = "Stream it here from " + service;
-            });
-          }
+              // Streaming services
+              Object.keys(data.streamingInfo).forEach((service, index) => {
+                console.log(service);
+                console.log(data.streamingInfo[service].us.link);
+                var stream_element = output_element.appendChild(document.createElement("div"));
+                stream_element.class = "w3-center w3-container w3-padding-64";
+                var stream_title_element = stream_element.appendChild(document.createElement("h3"));
+                stream_title_element.innerHTML = service.toUpperCase();
+                var stream_link_element = stream_element.appendChild(document.createElement("a"));
+                stream_link_element.href = data.streamingInfo[service].us.link;
+                stream_link_element.innerHTML = "Stream it here from " + service;
+              });
+            }
 
-          function submitFunction() {
-            var api_key = document.getElementById("api_key").value;
-            var media_id = document.getElementById("media_id").value;
-            const data = null;
-            const xhr = new XMLHttpRequest();
-            xhr.withCredentials = true;
-            xhr.addEventListener("readystatechange", function () {
-	            if (this.readyState === this.DONE) {
-                output(JSON.parse(this.responseText));
-	            }
-            });
-            xhr.open("GET", "https://streaming-availability.p.rapidapi.com/get/basic?country=us&imdb_id=" + media_id + "&output_language=en");
-            xhr.setRequestHeader("x-rapidapi-host", "streaming-availability.p.rapidapi.com");
-            xhr.setRequestHeader("x-rapidapi-key", api_key);
-            xhr.send(data);
-          }
-        </script>
-      </form>
+            function submitFunction() {
+              var api_key = document.getElementById("api_key").value;
+              var media_id = document.getElementById("media_id").value;
+              const data = null;
+              const xhr = new XMLHttpRequest();
+              xhr.withCredentials = true;
+              xhr.addEventListener("readystatechange", function () {
+	              if (this.readyState === this.DONE) {
+                  output(JSON.parse(this.responseText));
+	              }
+              });
+              xhr.open("GET", "https://streaming-availability.p.rapidapi.com/get/basic?country=us&imdb_id=" + media_id + "&output_language=en");
+              xhr.setRequestHeader("x-rapidapi-host", "streaming-availability.p.rapidapi.com");
+              xhr.setRequestHeader("x-rapidapi-key", api_key);
+              xhr.send(data);
+            }
+          </script>
+        </form>
+      </div>
     </div>
-    <div id="results">
+    <br><br>
+    <div class="w3-content w3-container w3-center" id="results">
 
     </div>
+    <br><br><br><br>
   </body> 
 </html>
