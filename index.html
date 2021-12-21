@@ -5,22 +5,39 @@
   </head>
   <body>
     <div>
-      <p>This is nice</p>
+      <h1>Find where to stream something by its IMDb ID</h1>
       <form name="search" action="javascript:submitFunction();">
-        <label>IMDb/TMDb ID, formatted like "71712" or "464052":</label><br>
-        <input type="radio" id="tmdb">
-        <label for="tmdb">TMDB (TV show)</label>
-        <input type="radio" id="imdb" value="IMDB ID">
-        <label for="imdb">IMDB (movie)</label>
-        <br>
+        <label>IMDb id, formatted like "tt0133093":</label><br>
         <input type="text" id="media_id" name="media_id"><br><br>
-        
         <label>API Key:</label><br>
-        <input type="text" id="api_key" name="api_key"><br>
-
+        <input type="text" id="api_key" name="api_key"><br><br>
         <input type="submit" value="Submit" onclick="">
-
         <script type="text/javascript">
+          function output(data) {
+            var output_element = document.getElementById("results");
+            output_element.innerHTML = "";
+
+            // Title
+            var media_title_element = output_element.appendChild(document.createElement("h2"));
+            media_title_element.innerHTML = data.originalTitle;
+            
+            // Description
+            var media_descr_element = output_element.appendChild(document.createElement("p"));
+            media_descr_element.innerHTML = data.overview;
+
+            // Streaming services
+            Object.keys(data.streamingInfo).forEach((service, index) => {
+              console.log(service);
+              console.log(data.streamingInfo[service].us.link);
+              var stream_element = output_element.appendChild(document.createElement("div"));
+              var stream_title_element = stream_element.appendChild(document.createElement("h3"));
+              stream_title_element.innerHTML = service;
+              var stream_link_element = stream_element.appendChild(document.createElement("a"));
+              stream_link_element.href = data.streamingInfo[service].us.link;
+              stream_link_element.innerHTML = "Stream it here from " + service;
+            });
+          }
+
           function submitFunction() {
             var api_key = document.getElementById("api_key").value;
             var media_id = document.getElementById("media_id").value;
@@ -29,10 +46,10 @@
             xhr.withCredentials = true;
             xhr.addEventListener("readystatechange", function () {
 	            if (this.readyState === this.DONE) {
-		            alert(this.responseText);
+                output(JSON.parse(this.responseText));
 	            }
             });
-            xhr.open("GET", "https://streaming-availability.p.rapidapi.com/get/basic?country=us&tmdb_id=movie%2F120&output_language=en");
+            xhr.open("GET", "https://streaming-availability.p.rapidapi.com/get/basic?country=us&imdb_id=" + media_id + "&output_language=en");
             xhr.setRequestHeader("x-rapidapi-host", "streaming-availability.p.rapidapi.com");
             xhr.setRequestHeader("x-rapidapi-key", api_key);
             xhr.send(data);
